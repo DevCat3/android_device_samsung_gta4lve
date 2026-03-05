@@ -1,8 +1,8 @@
 # Logical partitions
-/system               ext4               /dev/block/mapper/system                                   flags=backup=1;display="System";flashimg=1
-/system_ext           ext4               /dev/block/mapper/system_ext                               flags=backup=1;display="System_ext";flashimg=1
-/vendor               ext4               /dev/block/mapper/vendor                                   flags=backup=1;display="Vendor";flashimg=1
-/product              ext4               /dev/block/mapper/product                                  flags=backup=1;display="Product";flashimg=1
+/system               emmc               /dev/block/mapper/system                                   flags=backup=1;flashimg=1;wipeingui;logical;display="System"
+/system_ext           emmc               /dev/block/mapper/system_ext                               flags=backup=1;flashimg=1;wipeingui;logical;display="System_ext"
+/vendor               emmc               /dev/block/mapper/vendor                                   flags=backup=1;flashimg=1;wipeingui;logical;display="Vendor"
+/product              emmc               /dev/block/mapper/product                                  flags=backup=1;flashimg=1;wipeingui;logical;display="Product"
 
 # Physical partitions
 /boot                 emmc               /dev/block/by-name/boot                                    flags=backup=1;display="Boot";flashimg=1
