@@ -38,7 +38,8 @@ TW_FRAMERATE := 60
 TW_MAX_BRIGHTNESS := 250
 TW_DEFAULT_BRIGHTNESS := 160
 TARGET_USES_VULKAN := true
-TW_BRIGHTNESS_PATH := "/sys/class/backlight/sprd_backlight/brightness"
+# TW_BRIGHTNESS_PATH := "/sys/class/backlight/sprd_backlight/brightness"
+TW_BRIGHTNESS_PATH := "/sys/devices/platform/soc/soc:ap-ahb/20400000.dsi/20400000.dsi.0/display/panel0/sprd_backlight/brightness"
 
 # Kernel
 BOARD_BOOTIMG_HEADER_VERSION := 2
@@ -88,7 +89,7 @@ TARGET_BOARD_PLATFORM := ums512
 BOARD_INCLUDE_RECOVERY_DTBO := true
 TARGET_RECOVERY_PIXEL_FORMAT := RGBX_8888
 TARGET_USERIMAGES_USE_EXT4 := true
-TARGET_USERIMAGES_USE_F2FS := true
+# TARGET_USERIMAGES_USE_F2FS := true
 
 # Verified Boot
 BOARD_AVB_ENABLE := true
@@ -150,9 +151,8 @@ BOARD_HAS_VND_BINDER := true
 TW_SUPPORT_INPUT_AIDL := true
 TW_SUPPORT_INPUT_HIDL := true
 TW_HAS_LARGE_FILESYSTEM := true
-TW_DEVICE_VERSION := DevCatowa
+TW_DEVICE_VERSION := DevCat3
 TW_USE_LEGACY_BATTERY_SERVICES := true
-TW_NEVER_UNMOUNT_SYSTEM := false
 ALLOW_LOGICAL_PARTITION_WIPE := true
 
 # For Gsi's partition
