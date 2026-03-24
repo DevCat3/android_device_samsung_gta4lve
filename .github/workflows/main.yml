@@ -88,7 +88,7 @@ jobs:
         IFS='_' read -r TWRP_VER USER_BRANCH <<< "$TWRP_VERSION"
         
         case "$USER_BRANCH" in
-          "twrp-12.1") MANIFEST_BRANCH="android-12.1" && JAVA_VERSION="11" ;;
+          "twrp-12.1") MANIFEST_BRANCH="twrp-12.1" && JAVA_VERSION="11" ;;
           "twrp-11.0") MANIFEST_BRANCH="twrp-11" && JAVA_VERSION="11" ;;
           "twrp-10.0") MANIFEST_BRANCH="twrp-10" && JAVA_VERSION="8" ;;
           "twrp-9.0")  MANIFEST_BRANCH="twrp-9"  && JAVA_VERSION="8" ;;
