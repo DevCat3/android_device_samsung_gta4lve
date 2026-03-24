@@ -1,4 +1,4 @@
-name: TWRP Recovery Builder - Personalized
+name: TWRP Recovery Builder - DevCat3
 
 on:
   workflow_dispatch:
@@ -7,7 +7,7 @@ on:
         description: 'Select TWRP Version'
         required: true
         type: choice
-        default: '3.7.0_twrp-11.0'
+        default: '3.7.1_twrp-12.1'
         options:
           - 3.7.1_twrp-12.1
           - 3.7.0_twrp-12.1
@@ -26,7 +26,7 @@ on:
       DEVICE_TREE_BRANCH:
         description: 'Device Tree Branch'
         required: true
-        default: 'android-11.0'
+        default: 'android-12.1'
       DEVICE_PATH:
         description: 'Device Path'
         required: true
@@ -87,13 +87,12 @@ jobs:
         TWRP_VERSION="${{ github.event.inputs.TWRP_VERSION }}"
         IFS='_' read -r TWRP_VER USER_BRANCH <<< "$TWRP_VERSION"
         
-        # Map user-friendly branch names to actual manifest branch names
         case "$USER_BRANCH" in
-          "twrp-12.1") MANIFEST_BRANCH="twrp-12.1" && JAVA_VERSION="11" ;;
+          "twrp-12.1") MANIFEST_BRANCH="android-12.1" && JAVA_VERSION="11" ;;
           "twrp-11.0") MANIFEST_BRANCH="twrp-11" && JAVA_VERSION="11" ;;
           "twrp-10.0") MANIFEST_BRANCH="twrp-10" && JAVA_VERSION="8" ;;
-          "twrp-9.0") MANIFEST_BRANCH="twrp-9" && JAVA_VERSION="8" ;;
-          *) MANIFEST_BRANCH="$USER_BRANCH" && JAVA_VERSION="8" ;;
+          "twrp-9.0")  MANIFEST_BRANCH="twrp-9"  && JAVA_VERSION="8" ;;
+          *)           MANIFEST_BRANCH="$USER_BRANCH" && JAVA_VERSION="8" ;;
         esac
         
         echo "✅ TWRP Version: $TWRP_VER"
@@ -114,7 +113,11 @@ jobs:
       run: |
         sudo apt update
         sudo apt -y upgrade
-        sudo apt -y install gperf gcc-multilib gcc-10-multilib g++-multilib g++-10-multilib lib32ncurses5-dev x11proto-core-dev lib32z-dev libgl1-mesa-dev libxml2-utils xsltproc bc ccache lib32readline-dev lib32z1-dev liblz4-tool libncurses5-dev libsdl1.2-dev libwxgtk3.0-gtk3-dev lzop pngcrush schedtool squashfs-tools imagemagick libbz2-dev lzma ncftp qemu-user-static libstdc++-10-dev libtinfo5 libgflags-dev
+        sudo apt -y install gperf gcc-multilib gcc-10-multilib g++-multilib g++-10-multilib \
+          lib32ncurses5-dev x11proto-core-dev lib32z-dev libgl1-mesa-dev libxml2-utils xsltproc \
+          bc ccache lib32readline-dev lib32z1-dev liblz4-tool libncurses5-dev libsdl1.2-dev \
+          libwxgtk3.0-gtk3-dev lzop pngcrush schedtool squashfs-tools imagemagick libbz2-dev \
+          lzma ncftp qemu-user-static libstdc++-10-dev libtinfo5 libgflags-dev
         sudo add-apt-repository universe -y
         sudo apt -y install libncurses5
 
@@ -131,13 +134,16 @@ jobs:
         chmod a+x ~/bin/repo
         sudo ln -sf ~/bin/repo /usr/bin/repo
 
-    - name: Initialize Repo with TWRP Manifest
+    - name: Initialize Repo with DevCat3 Custom Manifest
       run: |
         mkdir -p workspace
         cd workspace
         git config --global user.name "${{ env.USER_NAME }}"
         git config --global user.email "${{ env.USER_EMAIL }}"
-        repo init --depth=1 -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b ${{ env.MANIFEST_BRANCH }}
+        # Use DevCat3 custom manifest which points bootable/recovery to DevCat3 fork
+        repo init --depth=1 \
+          -u https://github.com/DevCat3/platform_manifest_twrp_aosp.git \
+          -b ${{ env.MANIFEST_BRANCH }}
 
     - name: Sync Repository
       run: |
@@ -147,7 +153,9 @@ jobs:
     - name: Clone Device Tree
       run: |
         cd workspace
-        git clone ${{ github.event.inputs.DEVICE_TREE }} -b ${{ github.event.inputs.DEVICE_TREE_BRANCH }} ./${{ github.event.inputs.DEVICE_PATH }}
+        git clone ${{ github.event.inputs.DEVICE_TREE }} \
+          -b ${{ github.event.inputs.DEVICE_TREE_BRANCH }} \
+          ./${{ github.event.inputs.DEVICE_PATH }}
         cd ${{ github.event.inputs.DEVICE_PATH }}
         echo "COMMIT_ID=$(git rev-parse HEAD)" >> $GITHUB_ENV
 
@@ -190,11 +198,10 @@ jobs:
           DEVICE_TREE_URL="${DEVICE_TREE_URL%.git}"
         fi
         echo "DEVICE_TREE_URL=${DEVICE_TREE_URL}" >> $GITHUB_ENV
-        
+
     - name: Check Generated Recovery Image
       run: |
         cd workspace
-
         PRODUCT_PATH="out/target/product/${{ github.event.inputs.DEVICE_NAME }}"
 
         if [ -f "$PRODUCT_PATH/recovery.img" ]; then
@@ -246,7 +253,8 @@ jobs:
           - 🔖 **Commit:** [Latest commit](${{ env.DEVICE_TREE_URL }}/commit/${{ env.COMMIT_ID }}) during build
           - 🔢 **MD5:** `${{ env.MD5_IMG }}`
           - 🏗️ **Built by:** @${{ github.actor }}
-          
+          - 🐱 **Recovery Source:** [DevCat3/android_bootable_recovery](https://github.com/DevCat3/android_bootable_recovery/tree/android-12.1)
+
           ## Installation Instructions
           - For Samsung devices: Use TAR file with Odin
           - For other devices: Use IMG file with fastboot
