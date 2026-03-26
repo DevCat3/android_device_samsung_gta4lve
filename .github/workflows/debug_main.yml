@@ -1,4 +1,4 @@
-name: TWRP Recovery Builder - DevCat3
+name: TWRP Recovery Builder - Debugger 
 
 on:
   workflow_dispatch:
@@ -169,6 +169,22 @@ jobs:
         echo "=== ArmToArm64Assembler usages ==="
         find . -name "*.cpp" -o -name "*.c" |           grep -v "out/\|\.repo/" |           xargs grep -l "ArmToArm64Assembler" 2>/dev/null || echo "None found"
       continue-on-error: true
+
+    - name: Disable PCRE2 JIT (sljit) to fix PROT_EXEC crash on ARM64
+      run: |
+        cd workspace
+        # sljitExecAllocator uses W+X mmap which is blocked on ARM64
+        sed -i 's/PROT_READ | PROT_WRITE | PROT_EXEC/PROT_READ | PROT_WRITE/g' \
+          external/pcre/dist2/src/sljit/sljitExecAllocator.c || true
+        sed -i 's/PROT_READ | PROT_WRITE | PROT_EXEC/PROT_READ | PROT_WRITE/g' \
+          external/pcre/dist2/src/sljit/sljitWXExecAllocator.c || true
+        sed -i 's/PROT_EXEC | PROT_READ/PROT_READ/g' \
+          external/pcre/dist2/src/sljit/sljitProtExecAllocator.c || true
+        # Disable PCRE2 JIT support entirely via config
+        find external/pcre -name "*.h" -o -name "*.c" | \
+          xargs grep -l "SUPPORT_JIT" 2>/dev/null | \
+          xargs sed -i 's/#define SUPPORT_JIT.*$/\/\/ JIT disabled for ARM64 recovery/' 2>/dev/null || true
+        echo "✅ PCRE2 JIT disabled"
 
     - name: Clone Device Tree
       run: |
