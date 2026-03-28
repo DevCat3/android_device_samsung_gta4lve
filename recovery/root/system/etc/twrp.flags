@@ -12,8 +12,8 @@
 # /vbmeta_system        emmc               /dev/block/by-name/vbmeta_system                           flags=backup=1;display="Vbmeta_System";flashimg=1
 # /misc                 emmc               /dev/block/by-name/misc
 /cache                ext4               /dev/block/by-name/cache                                   flags=backup=1;display="Cache"
-/metadata             ext4               /dev/block/by-name/metadata
-/data                 f2fs               /dev/block/by-name/userdata                                flags=display=data
+/dev/block/by-name/userdata	/data	f2fs	noatime,nosuid,nodev,discard,usrquota,grpquota,fsync_mode=nobarrier,reserve_root=32768,resgid=5678,inlinecrypt	latemount,wait,quota,check,fileencryption=aes-256-xts:aes-256-cts:v2+inlinecrypt_optimized,keydirectory=/metadata/vold/metadata_encryption,reservedsize=128M,checkpoint=fs,
+/dev/block/by-name/metadata	/metadata	ext4	noatime,nosuid,nodev,noauto_da_alloc,discard,journal_checksum,data=ordered,errors=panic,sync	wait,formattable,first_stage_mount,check
 
 # Removable storage
 /external_sd          auto               /dev/block/mmcblk1p1    /dev/block/mmcblk1                 flags=display="Micro SD card";storage;wipeingui;removable
