@@ -164,3 +164,16 @@ BOARD_SYSTEMIMAGE_PARTITION_RESERVED_SIZE := 3618910208
 PB_OFFICIAL := true
 PB_DISABLE_DEFAULT_DM_VERITY := true
 PB_TORCH_PATH := "/sys/class/backlight/sprd_backlight/brightness"
+
+# SHRP
+SHRP_EDL_MODE := 0
+SHRP_INTERNAL := /sdcard
+SHRP_EXTERNAL := /external_sd
+SHRP_OTG := /usb_otg
+SHRP_FLASH := 0
+SHRP_CUSTOM_FLASHLIGHT := true
+SHRP_FONP_1 := /sys/class/backlight/sprd_backlight/brightness
+SHRP_FONP_2 := /sys/devices/platform/soc/soc:ap-ahb/20400000.dsi/20400000.dsi.0/display/panel0/sprd_backlight/brightness
+SHRP_FLASH_MAX_BRIGHTNESS := 255
+SHRP_EXPRESS := true
+SHRP_NO_SAR_AUTOMOUNT := true
