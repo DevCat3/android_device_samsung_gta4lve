@@ -6,30 +6,30 @@ on:
       MANIFEST:
         description: 'SHRP Manifest'
         required: true
-        default: 'https://github.com/SHRP-Reborn/manifest.git'
+        default: 'https://github.com/SHRP/manifest.git'
       MANIFEST_BRANCH:
         description: 'SHRP Manifest Branch'
         required: true
-        default: ''
+        default: 'shrp-12.1'
         type: choice
         options:
-        - android-12.1
-        - android-11.0
-        - android-10.0
-        - android-9.0
-        - android-8.1
-        - android-7.1
-        - android-6.0
+        - shrp-12.1
+        - v3_11.0
+        - v3_10.0
+        - v3_9.0
+        - v3_8.1
+        - v3_7.1
+        - v3_6.0
       DEVICE_TREE:
-        description: 'Custom Recovery Tree' # Your already made Device Tree for TWRP
+        description: 'Custom Recovery Tree'
         required: true
-        default: 'https://github.com/DevCat3/android_device_samsung_gta4lve' 
+        default: 'https://github.com/DevCat3/android_device_samsung_gta4lve'
       DEVICE_TREE_BRANCH:
-        description: 'Custom Recovery Tree Branch' # Your Device Tree Branch, make sure it's right.
+        description: 'Custom Recovery Tree Branch'
         required: true
         default: 'android-12.1'
       BUILD_TARGET:
-        description: 'Specify your Build Target' # Pick among boot, recovery and vendor_boot
+        description: 'Specify your Build Target'
         required: true
         default: 'recovery'
         type: choice
@@ -42,8 +42,13 @@ on:
         required: false
         default: 'false'
         type: boolean
+      RECOVERY_TAR:
+        description: 'Create recovery.tar'
+        required: false
+        default: true
+        type: boolean
       LDCHECKPATH:
-        description: 'Path of blobs to check' # Use it know what kind of dependencies your missing for decryption blobs.
+        description: 'Path of blobs to check'
         required: true
         default: 'system/bin/qseecomd'
 
@@ -59,7 +64,7 @@ jobs:
     steps:
     - name: Check Out
       uses: actions/checkout@v4
-      
+
     - name: Display Inputs
       run: |
         echo "Displaying variables/inputs."
@@ -70,7 +75,7 @@ jobs:
 
     - name: Cleanup
       uses: rokibhasansagar/slimhub_actions@main
-      
+
     - name: Set Swap Space
       uses: pierotofy/set-swap-space@master
       with:
@@ -78,7 +83,7 @@ jobs:
 
     - name: Check Manifest Branch
       run: |
-        if [ ${{ inputs.MANIFEST_BRANCH }} == 'v3_11.0' ] || [ ${{ inputs.MANIFEST_BRANCH }} == 'shrp-12.1' ]; then
+        if [ "${{ inputs.MANIFEST_BRANCH }}" == 'v3_11.0' ] || [ "${{ inputs.MANIFEST_BRANCH }}" == 'shrp-12.1' ]; then
             echo "CHECK_LEGACY_BRANCH=false" >> $GITHUB_ENV
         else
             echo "CHECK_LEGACY_BRANCH=true" >> $GITHUB_ENV
@@ -95,7 +100,7 @@ jobs:
       with:
         distribution: 'zulu'
         java-version: '8'
-        
+
     - name: Install Git-Repo
       run: |
         mkdir ~/bin
@@ -107,8 +112,8 @@ jobs:
       run: |
         mkdir android-recovery
         cd android-recovery
-        git config --global user.name "lazycodebuilder"
-        git config --global user.email "154446636+lazycodebuilder@users.noreply.github.com"
+        git config --global user.name "DevCat3"
+        git config --global user.email "omarelbakery2008@gmail.com"
         repo init --depth=1 -u ${{ inputs.MANIFEST }} -b ${{ inputs.MANIFEST_BRANCH }}
 
     - name: Repo Sync
@@ -116,12 +121,10 @@ jobs:
         cd android-recovery
         repo sync -j$(nproc --all) --force-sync
 
-    - name: Replace SHRP Recovery with Custom Recovery
+    - name: Fix libfscrypttwrp dependency in fs_mgr
       run: |
-        cd android-recovery
-        rm -rf bootable/recovery
-        git clone https://github.com/DevCat3/bootable_recovery -b ${{ inputs.MANIFEST_BRANCH }} bootable/recovery
-      
+        sed -i 's/libfscrypttwrp/libfscrypt/g' android-recovery/system/core/fs_mgr/Android.bp
+
     - name: Clone Device Tree
       run: |
         cd android-recovery
@@ -132,13 +135,10 @@ jobs:
     - name: Extracting variables from .mk file
       run: |
         cd android-recovery/device_tree
-        # Initialize variables
         DEVICE_MAKEFILE=""
         DEVICE_DIRECTORY=""
         DEVICE_NAME=""
-        # Loop through each .mk file in the current directory
         for file in *.mk; do
-            # Extract variables using sed
             makefile=$(sed -n 's/^[[:space:]]*PRODUCT_NAME[[:space:]]*:=\s*\(.*\)/\1/p' "$file")
             brand=$(sed -n 's/^[[:space:]]*PRODUCT_BRAND[[:space:]]*:=\s*\(.*\)/\1/p' "$file")
             codename=$(sed -n 's/^[[:space:]]*PRODUCT_DEVICE[[:space:]]*:=\s*\(.*\)/\1/p' "$file")
@@ -152,12 +152,9 @@ jobs:
                 break
             fi
         done
-        # Navigate to the parent directory
         cd ../
-        # Create the necessary directories
         echo "Creating directory: $DEVICE_DIRECTORY"
         mkdir -p "$DEVICE_DIRECTORY"
-        # Move device_tree folder to device_directory and rename it to $DEVICE_NAME
         echo "Moving device_tree to $DEVICE_DIRECTORY/$DEVICE_NAME"
         mv device_tree "$DEVICE_DIRECTORY"/"$DEVICE_NAME"
 
@@ -176,23 +173,31 @@ jobs:
 
     - name: Set build target for upload
       run: |
-        if [ ${{ inputs.BUILD_TARGET }} == 'recovery' ]; then
+        if [ "${{ inputs.BUILD_TARGET }}" == 'recovery' ]; then
            echo "BUILD_TARGET_NAME=recovery" >> $GITHUB_ENV
-        elif [ ${{ inputs.BUILD_TARGET }} == 'boot' ]; then
+        elif [ "${{ inputs.BUILD_TARGET }}" == 'boot' ]; then
            echo "BUILD_TARGET_NAME=boot" >> $GITHUB_ENV
         else
            echo "BUILD_TARGET_NAME=vendor_boot" >> $GITHUB_ENV
         fi
 
-    - name: Set Build Date # Output will be use in Release
+    - name: Create recovery.tar
+      if: inputs.RECOVERY_TAR == true
+      run: |
+        cd android-recovery/out/target/product/${{ env.DEVICE_NAME }}
+        tar -cvf ${{ env.BUILD_TARGET_NAME }}.tar ${{ env.BUILD_TARGET_NAME }}.img
+        echo "RECOVERY_TAR_NAME=${{ env.BUILD_TARGET_NAME }}.tar" >> $GITHUB_ENV
+
+    - name: Set Build Date
       run: |
         echo "BUILD_DATE=$(date +%Y%m%d)" >> $GITHUB_ENV
-      
+
     - name: Upload to Release
       uses: softprops/action-gh-release@master
       with:
         files: |
           android-recovery/out/target/product/${{ env.DEVICE_NAME }}/${{ env.BUILD_TARGET_NAME }}.img
+          android-recovery/out/target/product/${{ env.DEVICE_NAME }}/${{ env.BUILD_TARGET_NAME }}.tar
           android-recovery/out/target/product/${{ env.DEVICE_NAME }}/SHRP*.zip
           android-recovery/out/target/product/${{ env.DEVICE_NAME }}/ramdisk-recovery.*
         name: Unofficial SHRP For ${{ env.DEVICE_NAME }} // ${{ env.BUILD_DATE }}
