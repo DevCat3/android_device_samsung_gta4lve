@@ -5,12 +5,14 @@
 - [DevCat3](https://github.com/DevCat3) - developer
 - [QOS3](https://github.com/QOS3) - developer
 - [Omar Helicopterr](https://github.com/real-omar) - developer
+- [MRX7014](https://github.com/MRX7014) - developer
 - [Omar Hisham](https://t.me/Omarhesham124) - Tester
+- [Adam](https://github.com/DoMa3199) - Tester
 
 
 # Samsung Tab A7 SM-T509
 <p align="left" width="100%">
-<img width="33%" src="https://github.com/DevCat3/DevCatowa_Random_stuff/blob/main/T509/samsung-galaxy-tab-a7-104-2020.jpg"> 
+<img width="33%" src="https://github.com/DevCat3/android_device_samsung_gta4lve/blob/android-12.1/samsung-galaxy-tab-a7-104-2020.jpg"> 
 </p>
 
 
