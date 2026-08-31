@@ -32,7 +32,7 @@
 | MicroSD                      | Yes up to 512 GB                                                              |
 | Battery                      | Li-Po 7040 mAh, 15W fast charge                                               |
 | Dimensions                   | 146.9 x 70.5 x 7.2 mm                                                         |
-| Display                      | 6.2" 2340x1080 pixels, 19.5:9 ratio, Dynamic AMOLED 2X, 120Hz (~418 ppi)      |
+| Display                      | 6.2" 1200x2000 pixels, 19.5:9 ratio, TFT, 60HZ (240 ppi)                      |
 | Rear Camera 1                | 8 MP, AF                                                                      |
 | Front Camera                 | 5 MP                                                                          |
 | Fingerprint                  | no                                                                            |
