@@ -6,6 +6,7 @@
 # partitions
 /dev/block/by-name/userdata	/data	f2fs	noatime,nosuid,nodev,discard,usrquota,grpquota,fsync_mode=nobarrier,reserve_root=32768,resgid=5678,inlinecrypt	latemount,wait,quota,check,fileencryption=aes-256-xts:aes-256-cts:v2+inlinecrypt_optimized,keydirectory=/metadata/vold/metadata_encryption,reservedsize=128M,checkpoint=fs,
 /dev/block/by-name/metadata	/metadata	ext4	noatime,nosuid,nodev,noauto_da_alloc,discard,journal_checksum,data=ordered,errors=panic,sync	wait,formattable,first_stage_mount,check
+
 /boot			emmc		/dev/block/by-name/boot                  flags=backup=1;flashimg;display="Boot"
 /recovery		emmc		/dev/block/by-name/recovery              flags=backup=1;flashimg;display="Recovery"
 /cache			ext4		/dev/block/by-name/cache                 flags=backup=1;display="Cache"
@@ -16,8 +17,35 @@
 /optics_image           emmc		/dev/block/by-name/optics		 flags=backup=1;flashimg;display="Optics Image"
 /prism_image            emmc		/dev/block/by-name/prism                 flags=backup=1;flashimg;display="Prism Image"
 /vbmeta_system          emmc		/dev/block/by-name/vbmeta_system	 flags=backup=1;flashimg;display="Vbmeta_System"
-/vbmeta_vendor          emmc            /dev/block/by-name/vbmeta_Vendor         flags=backup=1;flashimg;display="Vbmeta_Vendor"
+/vbmeta_vendor          emmc            /dev/block/by-name/vbmeta_vendor         flags=backup=1;flashimg;display="Vbmeta_Vendor"
 /vbmeta                 emmc		/dev/block/by-name/vbmeta                flags=backup=1;flashimg;display="Vbmeta"
+
+# extra backup-only partitions (added from recovery.fstab, not flashable)
+/spl                    emmc		/dev/block/mmcblk0boot0                  flags=backup=1;display="SPL"
+/spl_bk                 emmc		/dev/block/mmcblk0boot1                  flags=backup=1;display="SPL Backup"
+/uboot                  emmc		/dev/block/by-name/uboot                 flags=backup=1;display="Uboot"
+/sml                    emmc		/dev/block/by-name/sml                   flags=backup=1;display="SML"
+/tos                    emmc		/dev/block/by-name/trustos               flags=backup=1;display="TrustOS"
+/teecfg                 emmc		/dev/block/by-name/teecfg                flags=backup=1;display="TEE Config"
+/ltedsp                 emmc		/dev/block/by-name/l_ldsp                flags=backup=1;display="LTE DSP"
+/ltegdsp                emmc		/dev/block/by-name/l_gdsp                flags=backup=1;display="LTE GDSP"
+/lteagdsp               emmc		/dev/block/by-name/l_agdsp               flags=backup=1;display="LTE AGDSP"
+/ltecdsp                emmc		/dev/block/by-name/l_cdsp                flags=backup=1;display="LTE CDSP"
+/ltemodem               emmc		/dev/block/by-name/l_modem               flags=backup=1;display="LTE Modem"
+/ltefixnv1              emmc		/dev/block/by-name/l_fixnv1              flags=backup=1;display="LTE FixNV1"
+/ltefixnv2              emmc		/dev/block/by-name/l_fixnv2              flags=backup=1;display="LTE FixNV2"
+/ltedeltanv             emmc		/dev/block/by-name/l_deltanv             flags=backup=1;display="LTE DeltaNV"
+/wcnmodem               emmc		/dev/block/by-name/wcnmodem              flags=backup=1;display="WCN Modem"
+/gnssmodem              emmc		/dev/block/by-name/gnssmodem             flags=backup=1;display="GNSS Modem"
+/pmsys                  emmc		/dev/block/by-name/pm_sys                flags=backup=1;display="PM Sys"
+/logo                   emmc		/dev/block/by-name/logo                  flags=backup=1;display="Logo"
+/fbootlogo              emmc		/dev/block/by-name/fbootlogo             flags=backup=1;display="Fboot Logo"
+/socko                  ext4		/dev/block/by-name/socko                 flags=backup=1;display="Socko"
+/odmko                  ext4		/dev/block/by-name/odmko                 flags=backup=1;display="Odmko"
+/mnt/vendor             ext4		/dev/block/by-name/prodnv                flags=backup=1;display="ProdNV"
+/deltanv                emmc		/dev/block/by-name/l_deltanv              flags=backup=1;display="DeltaNV"
+/nvitem                 emmc		/dev/block/by-name/l_fixnv2               flags=backup=1;display="NVItem"
+/qogirl6_m3l_cm4        emmc		/dev/block/by-name/pm_sys                flags=backup=1;display="Qogirl6 M3L CM4"
 
 /external_sd            auto            /dev/block/mmcblk1p1  /dev/block/mmcblk1            flags=display="MicroSD";storage;wipeingui;removable
 /usb_otg                auto            /dev/block/sda1       /dev/block/sda                flags=display="USB-Storage";storage;wipeingui;removable
