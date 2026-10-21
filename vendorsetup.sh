@@ -44,6 +44,7 @@ if [ "$1" = "$FDEVICE" -o "$FOX_BUILD_DEVICE" = "$FDEVICE" ]; then
 	export FOX_USE_UPDATED_MAGISKBOOT=1
 	export OF_LOOP_DEVICE_ERRORS_TO_LOG=1
 	export OF_SKIP_DECRYPTED_ADOPTED_STORAGE=1
+	export FOX_LOCAL_CALLBACK_SCRIPT="device/samsung/gta4lve/recovery/root/my_callback.sh"
 else
 	if [ -z "$FOX_BUILD_DEVICE" -a -z "$BASH_SOURCE" ]; then
 		echo "I: This script requires bash. Not processing the $FDEVICE $(basename $0)"
